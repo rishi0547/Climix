@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import SearchForm from "./components/SearchForm";
-import LocationButton from "./components/LocationButton";
-import RecentSearches from "./components/RecentSearches";
+import Header from "./components/Header";
 import WeatherCard from "./components/WeatherCard";
-import ErrorMessage from "./components/ErrorMessage";
 import Forecast from "./components/Forecast";
+import ErrorMessage from "./components/ErrorMessage";
 import { ThemeContext } from "./context/ThemeContext";
 
-import lightBg from "./asset/light-bg-img.jpg";
 import darkBg from "./asset/dark-bg-img.jpg";
+import lightBg from "./asset/light-bg-img.jpg";
 
 const App = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -17,8 +15,10 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchHistory, setSearchHistory] = useState([]);
+  const [unit, setUnit] = useState("C");
 
-  // Load search history from local storage when the component mounts
+  const isDark = theme === "dark";
+
   useEffect(() => {
     const history = JSON.parse(localStorage.getItem("cities")) || [];
     setSearchHistory(history);
@@ -26,16 +26,9 @@ const App = () => {
 
   const saveCity = (cityName) => {
     let history = JSON.parse(localStorage.getItem("cities")) || [];
-
-    // Remove if it already exists so we can add it to the front
     history = history.filter((c) => c.toLowerCase() !== cityName.toLowerCase());
-
-    // Add to the front of the array
     history.unshift(cityName);
-
-    // Keep only the last 5 searches
     history = history.slice(0, 5);
-
     localStorage.setItem("cities", JSON.stringify(history));
     setSearchHistory(history);
   };
@@ -46,11 +39,11 @@ const App = () => {
     setLoading(true);
     setError("");
     setWeather(null);
-    setCity(cityName); // Update the input field
+    setCity(cityName);
 
     try {
       const geoRes = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`,
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`
       );
       const geoData = await geoRes.json();
 
@@ -61,19 +54,32 @@ const App = () => {
       const { latitude, longitude, name, country } = geoData.results[0];
 
       const weatherRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+        `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
+        `&hourly=temperature_2m,weathercode` +
+        `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
+        `&timezone=auto&forecast_days=10`
       );
       const weatherData = await weatherRes.json();
+
+      const current = weatherData.current || {};
 
       setWeather({
         name,
         country,
-        temperature: weatherData.current_weather.temperature,
-        windspeed: weatherData.current_weather.windspeed,
+        temperature: current.temperature_2m ?? current.temperature ?? 0,
+        windspeed: current.windspeed_10m ?? current.windspeed ?? 0,
+        humidity: current.relative_humidity_2m ?? null,
+        pressure: current.surface_pressure ?? null,
+        apparent_temperature: current.apparent_temperature ?? null,
+        weathercode: current.weathercode ?? 2,
+        precipitation_probability: weatherData.daily?.precipitation_probability_max?.[0] ?? null,
+        sunrise: weatherData.daily?.sunrise?.[0] ?? null,
+        sunset: weatherData.daily?.sunset?.[0] ?? null,
+        hourly: weatherData.hourly || null,
         daily: weatherData.daily,
       });
 
-      // Save valid searches to history
       saveCity(name);
     } catch (err) {
       setError(err.message);
@@ -102,27 +108,38 @@ const App = () => {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          // 1. Get weather for current coordinates
           const weatherRes = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`,
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+            `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
+            `&hourly=temperature_2m,weathercode` +
+            `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
+            `&timezone=auto&forecast_days=10`
           );
           const weatherData = await weatherRes.json();
 
-          // 2. Get city name corresponding to coordinates (free reverse geocoding API)
           const locationRes = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
           );
           const locationData = await locationRes.json();
+
+          const current = weatherData.current || {};
 
           setWeather({
             name: locationData.city || locationData.locality || "Your Location",
             country: locationData.countryCode || "",
-            temperature: weatherData.current_weather.temperature,
-            windspeed: weatherData.current_weather.windspeed,
+            temperature: current.temperature_2m ?? current.temperature ?? 0,
+            windspeed: current.windspeed_10m ?? current.windspeed ?? 0,
+            humidity: current.relative_humidity_2m ?? null,
+            pressure: current.surface_pressure ?? null,
+            apparent_temperature: current.apparent_temperature ?? null,
+            weathercode: current.weathercode ?? 2,
+            precipitation_probability: weatherData.daily?.precipitation_probability_max?.[0] ?? null,
+            sunrise: weatherData.daily?.sunrise?.[0] ?? null,
+            sunset: weatherData.daily?.sunset?.[0] ?? null,
+            hourly: weatherData.hourly || null,
             daily: weatherData.daily,
           });
 
-          // Optional: Only save location if it actually resolved to a real city name
           if (locationData.city || locationData.locality) {
             saveCity(locationData.city || locationData.locality);
           }
@@ -132,88 +149,92 @@ const App = () => {
           setLoading(false);
         }
       },
-      (err) => {
-        setError(
-          "Unable to retrieve your location. Please allow location access.",
-        );
+      () => {
+        setError("Unable to retrieve your location. Please allow location access.");
         setLoading(false);
-      },
+      }
     );
   };
 
-  const bgImage = theme === "dark" ? darkBg : lightBg;
-  const isDark = theme === "dark";
+  const bgImage = isDark ? darkBg : lightBg;
 
   return (
     <div
-      className={`min-h-screen flex flex-col items-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out ${isDark ? "text-white" : "text-black"}`}
-      style={{ backgroundImage: `url(${bgImage})` }}
+      className={`min-h-screen flex flex-col font-sans relative ${isDark ? "text-white" : "text-gray-900"}`}
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center bottom",
+        backgroundAttachment: "fixed",
+      }}
     >
-      <div className="w-full max-w-7xl flex justify-between items-center mb-8 px-4 pt-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl md:text-2xl font-bold tracking-[0.1em] drop-shadow-sm uppercase">
-            CLIMIX
-          </h1>
-          {weather && (
-            <div className="flex items-center text-sm md:text-base opacity-80 pl-4 ml-2">
-              <span className="mr-2 opacity-70">📍</span> Weather in{" "}
-              <span className="font-bold ml-1">{weather.name}</span>{" "}
-              <span className="mx-1 opacity-50">/</span> {weather.country}
+      {/* Gradient overlay — adapts to theme */}
+      <div
+        className={`absolute inset-0 pointer-events-none z-0 ${
+          isDark
+            ? "bg-gradient-to-t from-black/70 via-black/30 to-transparent"
+            : "bg-gradient-to-t from-white/70 via-white/20 to-transparent"
+        }`}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center min-h-screen">
+        {/* Header */}
+        <Header
+          weather={weather}
+          unit={unit}
+          setUnit={setUnit}
+          city={city}
+          setCity={setCity}
+          fetchWeather={fetchWeather}
+          loading={loading}
+          getLocationWeather={getLocationWeather}
+          searchHistory={searchHistory}
+          getWeather={getWeather}
+          theme={theme}
+          toggleTheme={toggleTheme}
+        />
+
+        {/* Error Message */}
+        <ErrorMessage error={error} theme={theme} />
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col justify-end w-full max-w-[1400px] px-6 md:px-10 pb-10">
+          {/* Loading State */}
+          {loading && (
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-4">
+                <div className={`w-10 h-10 border-2 rounded-full animate-spin ${isDark ? "border-white/20 border-t-yellow-400" : "border-gray-300 border-t-yellow-500"}`} />
+                <p className={`text-sm font-light tracking-wide ${isDark ? "text-white/60" : "text-gray-500"}`}>Fetching weather data...</p>
+              </div>
             </div>
           )}
-        </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 cursor-pointer tracking-widest hover:opacity-80 transition-opacity">
-            <span className="text-[13px] font-semibold uppercase">MENU</span>
-          </div>
-          <button
-            onClick={toggleTheme}
-            className={`p-2 rounded-full backdrop-blur-md border text-lg transition-colors ${
-              isDark
-                ? "bg-white/10 border-white/20 hover:bg-white/20"
-                : "bg-black/10 border-black/20 hover:bg-black/20"
-            }`}
-            title={`Switch to ${isDark ? "light" : "dark"} mode`}
-          >
-            {isDark ? "☀️" : "🌙"}
-          </button>
-        </div>
-      </div>
 
-      <div className="w-full max-w-7xl flex-grow flex flex-col justify-end pb-8">
-        <div
-          className={`backdrop-blur-xl rounded-3xl p-6 md:p-12 w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] transition-colors duration-500 border ${
-            isDark
-              ? "bg-white/5 border-white/10 text-white"
-              : "bg-white/30 border-white/40 text-black"
-          } mb-12 flex flex-col md:flex-row md:items-start gap-8`}
-        >
-          <div className="w-full md:w-1/4 border-b md:border-b-0 md:border-r border-current/10 pb-6 md:pb-0 md:pr-8">
-            <SearchForm
-              city={city}
-              setCity={setCity}
-              fetchWeather={fetchWeather}
-              loading={loading}
-            />
-            <div className="mt-4">
-              <LocationButton
-                getLocationWeather={getLocationWeather}
-                loading={loading}
-              />
+          {/* Welcome State */}
+          {!weather && !loading && !error && (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <h2 className={`text-3xl md:text-4xl font-extralight mb-4 tracking-wide ${isDark ? "text-white/80" : "text-gray-800"}`}>
+                Welcome to Climix
+              </h2>
+              <p className={`text-sm font-light max-w-md leading-relaxed ${isDark ? "text-white/40" : "text-gray-500"}`}>
+                Open the <span className={`font-medium tracking-wider ${isDark ? "text-white/70" : "text-gray-700"}`}>MENU</span> to search for a city or use your current location to get started.
+              </p>
             </div>
-            <RecentSearches
-              searchHistory={searchHistory}
-              getWeather={getWeather}
-            />
-            <ErrorMessage error={error} />
-          </div>
+          )}
 
-          <div className="w-full md:w-3/4 flex flex-col justify-between h-full">
-            <WeatherCard weather={weather} />
-          </div>
+          {/* Weather Data */}
+          {weather && (
+            <>
+              <WeatherCard weather={weather} unit={unit} theme={theme} />
+
+              {weather.daily && (
+                <div className="mt-10 md:mt-14">
+                  <Forecast daily={weather.daily} unit={unit} theme={theme} />
+                </div>
+              )}
+            </>
+          )}
         </div>
-
-        {weather && weather.daily && <Forecast daily={weather.daily} />}
       </div>
     </div>
   );

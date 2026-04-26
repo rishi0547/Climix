@@ -1,80 +1,157 @@
 import React from "react";
 import {
-  Droplet,
   Wind,
+  Droplet,
+  Thermometer,
   CloudRain,
   Sunrise,
   Sunset,
-  Thermometer,
+  Sun,
+  Cloud,
+  CloudSun,
+  CloudSnow,
+  CloudLightning,
+  CloudFog,
 } from "lucide-react";
+import HourlyForecast from "./HourlyForecast";
 
-const WeatherCard = ({ weather }) => {
+const getWeatherIconLarge = (code) => {
+  const size = 64;
+  const strokeWidth = 1.2;
+  if (code === 0 || code === 1) return <Sun size={size} strokeWidth={strokeWidth} className="text-yellow-400 drop-shadow-lg" />;
+  if (code === 2) return <CloudSun size={size} strokeWidth={strokeWidth} className="text-yellow-300 drop-shadow-lg" />;
+  if (code === 3) return <Cloud size={size} strokeWidth={strokeWidth} className="text-white/80 drop-shadow-lg" />;
+  if (code === 45 || code === 48) return <CloudFog size={size} strokeWidth={strokeWidth} className="text-white/70 drop-shadow-lg" />;
+  if (code >= 51 && code <= 65) return <CloudRain size={size} strokeWidth={strokeWidth} className="text-blue-300 drop-shadow-lg" />;
+  if (code >= 71 && code <= 75) return <CloudSnow size={size} strokeWidth={strokeWidth} className="text-blue-200 drop-shadow-lg" />;
+  if (code >= 95) return <CloudLightning size={size} strokeWidth={strokeWidth} className="text-yellow-300 drop-shadow-lg" />;
+  return <CloudSun size={size} strokeWidth={strokeWidth} className="text-yellow-300 drop-shadow-lg" />;
+};
+
+const getWeatherDescription = (code) => {
+  const descriptions = {
+    0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+    45: "Fog", 48: "Depositing rime fog",
+    51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle",
+    61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+    71: "Slight snow fall", 73: "Moderate snow fall", 75: "Heavy snow fall",
+    95: "Thunderstorm",
+  };
+  return descriptions[code] || "Clear";
+};
+
+const WeatherCard = ({ weather, unit, theme }) => {
   if (!weather) return null;
 
+  const isDark = theme === "dark";
+
+  const formatTemp = (temp) => {
+    if (temp === undefined || temp === null) return "--";
+    const value = unit === "F" ? Math.round((temp * 9) / 5 + 32) : Math.round(temp);
+    const sign = value >= 0 ? "+" : "";
+    return `${sign}${value}`;
+  };
+
+  const now = new Date();
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const dateStr = `${dayNames[now.getDay()]} ${now.getDate()} ${monthNames[now.getMonth()]} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  const weatherCode = weather.weathercode ?? 2;
+  const desc = getWeatherDescription(weatherCode);
+
+  const formatTime = (isoStr) => {
+    if (!isoStr) return "--:--";
+    const d = new Date(isoStr);
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  };
+
+  const sunriseTime = weather.sunrise ? formatTime(weather.sunrise) : "4:59";
+  const sunsetTime = weather.sunset ? formatTime(weather.sunset) : "20:47";
+
   return (
-    <div className="flex flex-col md:flex-row shadow-none gap-8 md:gap-16 items-center md:items-start pl-0 md:pl-8">
-      <div className="flex flex-col items-center md:items-start tracking-wide">
-        <h2 className="text-xl font-medium opacity-80 mb-2">
-          {"Friday 27 July 15:00"} {/* Replace with dynamic date if needed */}
-        </h2>
-        <div className="flex items-center gap-6">
-          <span className="text-6xl sm:text-7xl lg:text-8xl drop-shadow-md">
-            🌤️
-          </span>
-          <div className="flex flex-col justify-center gap-1">
-            <span className="text-6xl sm:text-7xl lg:text-8xl font-medium tracking-tighter text-[#FACC15] drop-shadow-md">
-              +{weather.temperature}°C
+    <div className="w-full flex flex-col gap-8">
+      {/* Main 3-column section */}
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+        {/* Column 1: Current Overview */}
+        <div className="flex flex-col gap-1 lg:min-w-[320px]">
+          <p className={`text-[15px] md:text-[17px] font-light tracking-wide mb-4 drop-shadow-sm ${isDark ? "text-white/80" : "text-gray-700"}`}>
+            {dateStr}
+          </p>
+
+          <div className="flex items-center gap-5 mb-2">
+            {getWeatherIconLarge(weatherCode)}
+            <span className="text-[64px] md:text-[80px] lg:text-[90px] font-extralight tracking-tighter text-[#FACC15] drop-shadow-lg leading-none">
+              {formatTemp(weather.temperature)}°C
             </span>
           </div>
-        </div>
-        <p className="text-xl font-light mt-4 mb-1">
-          Feels like {weather.temperature + 1}°
-        </p>
-        <p className="text-sm font-light opacity-70">
-          The whole day will be partly cloudy. No precipitation.
-        </p>
 
-        <div className="mt-8 flex gap-6 text-sm font-light opacity-60">
-          <div className="flex items-center gap-2">
-            <Sunrise size={16} /> Sunrise: 4:59
-          </div>
-          <div className="flex items-center gap-2">
-            <Sunset size={16} /> Sunset: 20:47
-          </div>
-        </div>
-      </div>
+          <p className={`text-[17px] font-light mt-2 drop-shadow-sm ${isDark ? "text-white/90" : "text-gray-800"}`}>
+            Feels like {formatTemp(weather.apparent_temperature ?? weather.temperature + 1)}°
+          </p>
 
-      <div className="flex flex-col gap-4 pt-0 md:pt-4 border-t md:border-t-0 md:border-l border-current/20 mt-8 md:mt-0 pt-6 md:pt-0 md:pl-10 text-sm font-light">
-        <h3 className="font-semibold text-base mb-2 tracking-widest opacity-90 uppercase">
-          More Details:
-        </h3>
-        <div className="flex justify-between items-center gap-6 pb-2 border-b border-current/10">
-          <span className="flex items-center gap-2 opacity-80">
-            <Wind size={16} /> Wind speed:
-          </span>
-          <span className="font-medium">{weather.windspeed} m/s</span>
+          <p className={`text-[13px] font-light mt-1 max-w-[320px] leading-relaxed ${isDark ? "text-white/60" : "text-gray-500"}`}>
+            The whole day will be {desc.toLowerCase()}. {weather.precipitation_probability != null && weather.precipitation_probability > 5 ? `Precipitation probability: ${weather.precipitation_probability}%` : "No precipitation."}
+          </p>
+
+          <div className={`mt-6 flex gap-6 text-[12px] font-light ${isDark ? "text-white/50" : "text-gray-500"}`}>
+            <div className="flex items-center gap-1.5">
+              <Sunrise size={14} strokeWidth={1.5} /> Sunrise: {sunriseTime}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Sunset size={14} strokeWidth={1.5} /> Sunset: {sunsetTime}
+            </div>
+          </div>
         </div>
-        <div className="flex justify-between items-center gap-6 pb-2 border-b border-current/10">
-          <span className="flex items-center gap-2 opacity-80">
-            <Droplet size={16} /> Air humidity:
-          </span>
-          <span className="font-medium">42-76%</span>
+
+        {/* Column 2: More Details */}
+        <div className="flex flex-col gap-3 lg:min-w-[220px] pt-2">
+          <h3 className={`text-[12px] font-semibold tracking-[0.18em] uppercase mb-2 ${isDark ? "text-white/60" : "text-gray-500"}`}>
+            More Details:
+          </h3>
+
+          <DetailRow
+            icon={<Wind size={14} strokeWidth={1.5} />}
+            label="Wind speed:"
+            value={`${weather.windspeed} m/s`}
+            isDark={isDark}
+          />
+          <DetailRow
+            icon={<Droplet size={14} strokeWidth={1.5} />}
+            label="Air humidity:"
+            value={weather.humidity != null ? `${weather.humidity}%` : "42-76%"}
+            isDark={isDark}
+          />
+          <DetailRow
+            icon={<Thermometer size={14} strokeWidth={1.5} />}
+            label="Pressure:"
+            value={weather.pressure != null ? `${Math.round(weather.pressure)}hPa` : "747-749mm"}
+            isDark={isDark}
+          />
+          <DetailRow
+            icon={<CloudRain size={14} strokeWidth={1.5} />}
+            label="Precipitation probability:"
+            value={weather.precipitation_probability != null ? `${weather.precipitation_probability}%` : "2%"}
+            isDark={isDark}
+          />
         </div>
-        <div className="flex justify-between items-center gap-6 pb-2 border-b border-current/10">
-          <span className="flex items-center gap-2 opacity-80">
-            <Thermometer size={16} /> Pressure:
-          </span>
-          <span className="font-medium">747-749mm</span>
-        </div>
-        <div className="flex justify-between items-center gap-6 pb-2">
-          <span className="flex items-center gap-2 opacity-80">
-            <CloudRain size={16} /> Precipitation probability:
-          </span>
-          <span className="font-medium">2%</span>
+
+        {/* Column 3: Hourly Forecast */}
+        <div className="flex-1 w-full lg:w-auto">
+          <HourlyForecast hourly={weather.hourly} unit={unit} theme={theme} />
         </div>
       </div>
     </div>
   );
 };
+
+const DetailRow = ({ icon, label, value, isDark }) => (
+  <div className={`flex justify-between items-center gap-4 pb-2.5 border-b text-[13px] ${isDark ? "border-white/[0.08]" : "border-gray-900/[0.08]"}`}>
+    <span className={`flex items-center gap-2 font-light ${isDark ? "text-white/60" : "text-gray-600"}`}>
+      {icon} {label}
+    </span>
+    <span className={`font-medium ${isDark ? "text-white/90" : "text-gray-900"}`}>{value}</span>
+  </div>
+);
 
 export default WeatherCard;
