@@ -145,7 +145,7 @@ const App = () => {
   const isDark = theme === "dark";
 
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col items-center justify-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
@@ -153,15 +153,19 @@ const App = () => {
         <button
           onClick={toggleTheme}
           className="p-3 rounded-full bg-white/20 backdrop-blur-md shadow-lg border border-white/30 text-2xl hover:bg-white/30 transition-colors"
-          title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+          title={`Switch to ${isDark ? "light" : "dark"} mode`}
         >
           {isDark ? "☀️" : "🌙"}
         </button>
       </div>
 
-      <div className={`backdrop-blur-md rounded-2xl p-8 w-full max-w-md shadow-2xl text-center transition-colors duration-500 ${isDark ? 'bg-gray-900/80 text-white' : 'bg-white/85 text-gray-800'}`}>
-        <h1 className={`text-3xl font-extrabold mb-6 drop-shadow-sm ${isDark ? 'text-white' : 'text-gray-800'}`}>
-          Weather App
+      <div
+        className={`backdrop-blur-md rounded-2xl p-8 w-full max-w-md shadow-2xl text-center transition-colors duration-500 ${isDark ? "bg-gray-900/80 text-white" : "bg-white/85 text-gray-800"}`}
+      >
+        <h1
+          className={`text-3xl font-extrabold mb-6 drop-shadow-sm ${isDark ? "text-white" : "text-gray-800"}`}
+        >
+          CLIMIX
         </h1>
 
         <SearchForm
