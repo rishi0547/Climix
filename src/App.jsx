@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import SearchForm from "./components/SearchForm";
 import LocationButton from "./components/LocationButton";
 import RecentSearches from "./components/RecentSearches";
 import WeatherCard from "./components/WeatherCard";
 import ErrorMessage from "./components/ErrorMessage";
 import Forecast from "./components/Forecast";
+import { ThemeContext } from "./context/ThemeContext";
+
+import lightBg from "./asset/light-bg-img.jpg";
+import darkBg from "./asset/dark-bg-img.jpg";
 
 const App = () => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -136,10 +141,26 @@ const App = () => {
     );
   };
 
+  const bgImage = theme === "dark" ? darkBg : lightBg;
+  const isDark = theme === "dark";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 to-indigo-400 p-4 font-sans">
-      <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 w-full max-w-md shadow-2xl text-center">
-        <h1 className="text-3xl font-extrabold text-gray-800 mb-6 drop-shadow-sm">
+    <div 
+      className="min-h-screen flex flex-col items-center justify-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
+      <div className="w-full max-w-4xl flex justify-end mb-4">
+        <button
+          onClick={toggleTheme}
+          className="p-3 rounded-full bg-white/20 backdrop-blur-md shadow-lg border border-white/30 text-2xl hover:bg-white/30 transition-colors"
+          title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+        >
+          {isDark ? "☀️" : "🌙"}
+        </button>
+      </div>
+
+      <div className={`backdrop-blur-md rounded-2xl p-8 w-full max-w-md shadow-2xl text-center transition-colors duration-500 ${isDark ? 'bg-gray-900/80 text-white' : 'bg-white/85 text-gray-800'}`}>
+        <h1 className={`text-3xl font-extrabold mb-6 drop-shadow-sm ${isDark ? 'text-white' : 'text-gray-800'}`}>
           Weather App
         </h1>
 
