@@ -4,6 +4,7 @@ import LocationButton from "./components/LocationButton";
 import RecentSearches from "./components/RecentSearches";
 import WeatherCard from "./components/WeatherCard";
 import ErrorMessage from "./components/ErrorMessage";
+import Forecast from "./components/Forecast";
 
 const App = () => {
   const [city, setCity] = useState("");
@@ -55,7 +56,7 @@ const App = () => {
       const { latitude, longitude, name, country } = geoData.results[0];
 
       const weatherRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`,
       );
       const weatherData = await weatherRes.json();
 
@@ -64,6 +65,7 @@ const App = () => {
         country,
         temperature: weatherData.current_weather.temperature,
         windspeed: weatherData.current_weather.windspeed,
+        daily: weatherData.daily,
       });
 
       // Save valid searches to history
@@ -97,7 +99,7 @@ const App = () => {
         try {
           // 1. Get weather for current coordinates
           const weatherRes = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`,
           );
           const weatherData = await weatherRes.json();
 
@@ -112,6 +114,7 @@ const App = () => {
             country: locationData.countryCode || "",
             temperature: weatherData.current_weather.temperature,
             windspeed: weatherData.current_weather.windspeed,
+            daily: weatherData.daily,
           });
 
           // Optional: Only save location if it actually resolved to a real city name
@@ -157,6 +160,7 @@ const App = () => {
         <ErrorMessage error={error} />
 
         <WeatherCard weather={weather} />
+        {weather && weather.daily && <Forecast daily={weather.daily} />}
       </div>
     </div>
   );
