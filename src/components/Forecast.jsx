@@ -59,7 +59,7 @@ const Forecast = ({ daily }) => {
           </span>
         </div>
       </div>
-      
+
       <div className="flex justify-between items-center overflow-x-auto gap-4 pt-6 px-4 md:px-12 w-full pb-4">
         {next5Days.map((day, index) => (
           <div
@@ -79,14 +79,20 @@ const Forecast = ({ daily }) => {
             </div>
 
             <div className="flex flex-col text-xs font-medium tracking-wide mb-8 opacity-70">
-              <span>min <span className="opacity-90">{Math.round(day.minTemp)}°</span></span>
-              <span>max <span className="opacity-90">{Math.round(day.maxTemp)}°</span></span>
+              <span>
+                min{" "}
+                <span className="opacity-90">{Math.round(day.minTemp)}°</span>
+              </span>
+              <span>
+                max{" "}
+                <span className="opacity-90">{Math.round(day.maxTemp)}°</span>
+              </span>
             </div>
 
             <span className="text-3xl mb-4 drop-shadow-md">
               {getWeatherIcon(day.code)}
             </span>
-            
+
             <span className="text-xs font-light opacity-60 capitalize max-w-[70px] text-center leading-tight">
               {weatherDescriptions[day.code] || "Clear"}
             </span>

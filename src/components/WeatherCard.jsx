@@ -1,5 +1,12 @@
 import React from "react";
-import { Droplet, Wind, CloudRain, Sunrise, Sunset, Thermometer } from "lucide-react";
+import {
+  Droplet,
+  Wind,
+  CloudRain,
+  Sunrise,
+  Sunset,
+  Thermometer,
+} from "lucide-react";
 
 const WeatherCard = ({ weather }) => {
   if (!weather) return null;
@@ -11,7 +18,9 @@ const WeatherCard = ({ weather }) => {
           {"Friday 27 July 15:00"} {/* Replace with dynamic date if needed */}
         </h2>
         <div className="flex items-center gap-6">
-          <span className="text-6xl sm:text-7xl lg:text-8xl drop-shadow-md">🌤️</span>
+          <span className="text-6xl sm:text-7xl lg:text-8xl drop-shadow-md">
+            🌤️
+          </span>
           <div className="flex flex-col justify-center gap-1">
             <span className="text-6xl sm:text-7xl lg:text-8xl font-medium tracking-tighter text-[#FACC15] drop-shadow-md">
               +{weather.temperature}°C
@@ -40,19 +49,27 @@ const WeatherCard = ({ weather }) => {
           More Details:
         </h3>
         <div className="flex justify-between items-center gap-6 pb-2 border-b border-current/10">
-          <span className="flex items-center gap-2 opacity-80"><Wind size={16} /> Wind speed:</span>
+          <span className="flex items-center gap-2 opacity-80">
+            <Wind size={16} /> Wind speed:
+          </span>
           <span className="font-medium">{weather.windspeed} m/s</span>
         </div>
         <div className="flex justify-between items-center gap-6 pb-2 border-b border-current/10">
-          <span className="flex items-center gap-2 opacity-80"><Droplet size={16} /> Air humidity:</span>
+          <span className="flex items-center gap-2 opacity-80">
+            <Droplet size={16} /> Air humidity:
+          </span>
           <span className="font-medium">42-76%</span>
         </div>
         <div className="flex justify-between items-center gap-6 pb-2 border-b border-current/10">
-          <span className="flex items-center gap-2 opacity-80"><Thermometer size={16} /> Pressure:</span>
+          <span className="flex items-center gap-2 opacity-80">
+            <Thermometer size={16} /> Pressure:
+          </span>
           <span className="font-medium">747-749mm</span>
         </div>
         <div className="flex justify-between items-center gap-6 pb-2">
-          <span className="flex items-center gap-2 opacity-80"><CloudRain size={16} /> Precipitation probability:</span>
+          <span className="flex items-center gap-2 opacity-80">
+            <CloudRain size={16} /> Precipitation probability:
+          </span>
           <span className="font-medium">2%</span>
         </div>
       </div>

@@ -155,14 +155,21 @@ const App = () => {
             SYNOPTIC
           </h1>
           {weather && (
-            <div className="flex items-center text-sm md:text-base opacity-80 border-l border-current pl-4 ml-2">
-              <span className="mr-1">📍</span> Weather in <span className="font-semibold ml-1">{weather.name}</span> <span className="mx-1">/</span> {weather.country}
+            <div className="flex items-center text-sm md:text-base opacity-80 pl-4 ml-2">
+              <span className="mr-1">📍</span> Weather in{" "}
+              <span className="font-semibold ml-1">{weather.name}</span>{" "}
+              <span className="mx-1">/</span> {weather.country}
             </div>
           )}
         </div>
         <div className="flex items-center gap-6">
           <div className="hidden sm:flex text-sm tracking-widest font-semibold opacity-80 cursor-pointer">
-            °C <span className="mx-2 opacity-50">|</span> <span className="opacity-50">°F</span>
+            °C <span className="mx-2 opacity-50">|</span>{" "}
+            <span className="opacity-50">°F</span>
+          </div>
+          <div className="hidden sm:flex text-sm tracking-widest font-semibold opacity-80 cursor-pointer">
+            EN <span className="mx-2 opacity-50">|</span>{" "}
+            <span className="opacity-50">RU</span>
           </div>
           <div className="flex items-center gap-2 cursor-pointer">
             <span className="text-sm font-semibold tracking-widest">MENU</span>
@@ -181,7 +188,7 @@ const App = () => {
         <div
           className={`backdrop-blur-md rounded-3xl p-6 md:p-10 w-full shadow-2xl transition-colors duration-500 ${isDark ? "bg-gray-950/40 text-gray-100" : "bg-white/40 text-gray-900"} mb-12 flex flex-col md:flex-row md:items-start gap-8`}
         >
-          <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-current/10 pb-6 md:pb-0 md:pr-6">
+          <div className="w-full md:w-1/4 border-b md:border-b-0 md:border-r border-current/10 pb-6 md:pb-0 md:pr-6">
             <SearchForm
               city={city}
               setCity={setCity}
@@ -194,11 +201,14 @@ const App = () => {
                 loading={loading}
               />
             </div>
-            <RecentSearches searchHistory={searchHistory} getWeather={getWeather} />
+            <RecentSearches
+              searchHistory={searchHistory}
+              getWeather={getWeather}
+            />
             <ErrorMessage error={error} />
           </div>
 
-          <div className="w-full md:w-2/3 flex flex-col justify-between h-full">
+          <div className="w-full md:w-3/4 flex flex-col justify-between h-full">
             <WeatherCard weather={weather} />
           </div>
         </div>
