@@ -146,45 +146,63 @@ const App = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out"
+      className={`min-h-screen flex flex-col items-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out ${isDark ? "text-white" : "text-gray-900"}`}
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="w-full max-w-4xl flex justify-end mb-4">
-        <button
-          onClick={toggleTheme}
-          className="p-3 rounded-full bg-white/20 backdrop-blur-md shadow-lg border border-white/30 text-2xl hover:bg-white/30 transition-colors"
-          title={`Switch to ${isDark ? "light" : "dark"} mode`}
-        >
-          {isDark ? "☀️" : "🌙"}
-        </button>
+      <div className="w-full max-w-6xl w-full flex justify-between items-center mb-8 px-4 pt-4">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl md:text-2xl font-bold tracking-widest drop-shadow-sm uppercase">
+            SYNOPTIC
+          </h1>
+          {weather && (
+            <div className="flex items-center text-sm md:text-base opacity-80 border-l border-current pl-4 ml-2">
+              <span className="mr-1">📍</span> Weather in <span className="font-semibold ml-1">{weather.name}</span> <span className="mx-1">/</span> {weather.country}
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="hidden sm:flex text-sm tracking-widest font-semibold opacity-80 cursor-pointer">
+            °C <span className="mx-2 opacity-50">|</span> <span className="opacity-50">°F</span>
+          </div>
+          <div className="flex items-center gap-2 cursor-pointer">
+            <span className="text-sm font-semibold tracking-widest">MENU</span>
+          </div>
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-lg hover:bg-white/20 transition-colors"
+            title={`Switch to ${isDark ? "light" : "dark"} mode`}
+          >
+            {isDark ? "☀️" : "🌙"}
+          </button>
+        </div>
       </div>
 
-      <div
-        className={`backdrop-blur-md rounded-2xl p-8 w-full max-w-md shadow-2xl text-center transition-colors duration-500 ${isDark ? "bg-gray-900/80 text-white" : "bg-white/85 text-gray-800"}`}
-      >
-        <h1
-          className={`text-3xl font-extrabold mb-6 drop-shadow-sm ${isDark ? "text-white" : "text-gray-800"}`}
+      <div className="w-full max-w-6xl flex-grow flex flex-col justify-end pb-8">
+        <div
+          className={`backdrop-blur-md rounded-3xl p-6 md:p-10 w-full shadow-2xl transition-colors duration-500 ${isDark ? "bg-gray-950/40 text-gray-100" : "bg-white/40 text-gray-900"} mb-12 flex flex-col md:flex-row md:items-start gap-8`}
         >
-          CLIMIX
-        </h1>
+          <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-current/10 pb-6 md:pb-0 md:pr-6">
+            <SearchForm
+              city={city}
+              setCity={setCity}
+              fetchWeather={fetchWeather}
+              loading={loading}
+            />
+            <div className="mt-4">
+              <LocationButton
+                getLocationWeather={getLocationWeather}
+                loading={loading}
+              />
+            </div>
+            <RecentSearches searchHistory={searchHistory} getWeather={getWeather} />
+            <ErrorMessage error={error} />
+          </div>
 
-        <SearchForm
-          city={city}
-          setCity={setCity}
-          fetchWeather={fetchWeather}
-          loading={loading}
-        />
+          <div className="w-full md:w-2/3 flex flex-col justify-between h-full">
+            <WeatherCard weather={weather} />
+          </div>
+        </div>
 
-        <LocationButton
-          getLocationWeather={getLocationWeather}
-          loading={loading}
-        />
-
-        <RecentSearches searchHistory={searchHistory} getWeather={getWeather} />
-
-        <ErrorMessage error={error} />
-
-        <WeatherCard weather={weather} />
         {weather && weather.daily && <Forecast daily={weather.daily} />}
       </div>
     </div>

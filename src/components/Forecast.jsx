@@ -46,31 +46,49 @@ const Forecast = ({ daily }) => {
   }
 
   return (
-    <div className="mt-8 border-t border-gray-200 pt-6">
-      <h3 className="text-xl font-semibold text-gray-700 mb-4 text-left">
-        5-Day Forecast
-      </h3>
-      <div className="flex justify-between items-center overflow-x-auto gap-4 pb-2">
+    <div className="w-full mt-10 md:mt-24 opacity-90 transition-all duration-300">
+      <div className="flex flex-col border-b border-current/20 pb-4 mb-4">
+        <div className="flex justify-between items-center px-4 w-full">
+          <div className="flex items-center gap-6">
+            <span className="text-[#FACC15] text-xs font-semibold tracking-widest uppercase border-b-2 border-[#FACC15] pb-2 cursor-pointer transition-colors hover:text-[#e5b206] px-1">
+              TODAY
+            </span>
+          </div>
+          <span className="text-xs font-light uppercase tracking-widest cursor-pointer border-b border-transparent hover:border-current transition-colors">
+            SHOW FOR 10 DAYS
+          </span>
+        </div>
+      </div>
+      
+      <div className="flex justify-between items-center overflow-x-auto gap-4 pt-6 px-4 md:px-12 w-full pb-4">
         {next5Days.map((day, index) => (
           <div
             key={index}
-            className="flex flex-col items-center bg-gray-50 rounded-xl p-3 min-w-[80px] shadow-sm"
+            className="flex flex-col items-center justify-between text-center min-w-[80px] hover:scale-105 transition-transform duration-300"
           >
-            <span className="text-sm font-medium text-gray-500 uppercase">
-              {day.date.toLocaleDateString("en-US", { weekday: "short" })}
+            <div className="flex flex-col text-center uppercase tracking-wider mb-6">
+              <span className="text-sm font-bold opacity-90 mb-1">
+                {day.date.toLocaleDateString("en-US", { weekday: "short" })}
+              </span>
+              <span className="text-xs font-light opacity-60">
+                {day.date.toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "short",
+                })}
+              </span>
+            </div>
+
+            <div className="flex flex-col text-xs font-medium tracking-wide mb-8 opacity-70">
+              <span>min <span className="opacity-90">{Math.round(day.minTemp)}°</span></span>
+              <span>max <span className="opacity-90">{Math.round(day.maxTemp)}°</span></span>
+            </div>
+
+            <span className="text-3xl mb-4 drop-shadow-md">
+              {getWeatherIcon(day.code)}
             </span>
-            <span className="text-xs text-gray-400 mb-2">
-              {day.date.toLocaleDateString("en-US", {
-                day: "numeric",
-                month: "short",
-              })}
-            </span>
-            <span className="text-3xl mb-2">{getWeatherIcon(day.code)}</span>
-            <span className="text-sm font-bold text-gray-700 mb-1">
-              {Math.round(day.maxTemp)}°
-            </span>
-            <span className="text-xs font-medium text-gray-400">
-              {Math.round(day.minTemp)}°
+            
+            <span className="text-xs font-light opacity-60 capitalize max-w-[70px] text-center leading-tight">
+              {weatherDescriptions[day.code] || "Clear"}
             </span>
           </div>
         ))}
