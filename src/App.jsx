@@ -149,34 +149,30 @@ const App = () => {
       className={`min-h-screen flex flex-col items-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out ${isDark ? "text-white" : "text-gray-900"}`}
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="w-full max-w-6xl w-full flex justify-between items-center mb-8 px-4 pt-4">
+      <div className="w-full max-w-7xl flex justify-between items-center mb-8 px-4 pt-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl md:text-2xl font-bold tracking-widest drop-shadow-sm uppercase">
+          <h1 className="text-xl md:text-2xl font-bold tracking-[0.1em] drop-shadow-sm uppercase">
             SYNOPTIC
           </h1>
           {weather && (
             <div className="flex items-center text-sm md:text-base opacity-80 pl-4 ml-2">
-              <span className="mr-1">📍</span> Weather in{" "}
-              <span className="font-semibold ml-1">{weather.name}</span>{" "}
-              <span className="mx-1">/</span> {weather.country}
+              <span className="mr-2 opacity-70">📍</span> Weather in{" "}
+              <span className="font-bold ml-1">{weather.name}</span>{" "}
+              <span className="mx-1 opacity-50">/</span> {weather.country}
             </div>
           )}
         </div>
         <div className="flex items-center gap-6">
-          <div className="hidden sm:flex text-sm tracking-widest font-semibold opacity-80 cursor-pointer">
-            °C <span className="mx-2 opacity-50">|</span>{" "}
-            <span className="opacity-50">°F</span>
-          </div>
-          <div className="hidden sm:flex text-sm tracking-widest font-semibold opacity-80 cursor-pointer">
-            EN <span className="mx-2 opacity-50">|</span>{" "}
-            <span className="opacity-50">RU</span>
-          </div>
-          <div className="flex items-center gap-2 cursor-pointer">
-            <span className="text-sm font-semibold tracking-widest">MENU</span>
+          <div className="flex items-center gap-2 cursor-pointer tracking-widest hover:opacity-80 transition-opacity">
+            <span className="text-[13px] font-semibold uppercase">MENU</span>
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-lg hover:bg-white/20 transition-colors"
+            className={`p-2 rounded-full backdrop-blur-md border text-lg transition-colors ${
+              isDark
+                ? "bg-white/10 border-white/20 hover:bg-white/20"
+                : "bg-black/10 border-black/20 hover:bg-black/20"
+            }`}
             title={`Switch to ${isDark ? "light" : "dark"} mode`}
           >
             {isDark ? "☀️" : "🌙"}
@@ -184,11 +180,15 @@ const App = () => {
         </div>
       </div>
 
-      <div className="w-full max-w-6xl flex-grow flex flex-col justify-end pb-8">
+      <div className="w-full max-w-7xl flex-grow flex flex-col justify-end pb-8">
         <div
-          className={`backdrop-blur-md rounded-3xl p-6 md:p-10 w-full shadow-2xl transition-colors duration-500 ${isDark ? "bg-gray-950/40 text-gray-100" : "bg-white/40 text-gray-900"} mb-12 flex flex-col md:flex-row md:items-start gap-8`}
+          className={`backdrop-blur-xl rounded-3xl p-6 md:p-12 w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] transition-colors duration-500 border ${
+            isDark 
+              ? "bg-white/5 border-white/10 text-white" 
+              : "bg-black/5 border-black/10 text-gray-900"
+          } mb-12 flex flex-col md:flex-row md:items-start gap-8`}
         >
-          <div className="w-full md:w-1/4 border-b md:border-b-0 md:border-r border-current/10 pb-6 md:pb-0 md:pr-6">
+          <div className="w-full md:w-1/4 border-b md:border-b-0 md:border-r border-current/10 pb-6 md:pb-0 md:pr-8">
             <SearchForm
               city={city}
               setCity={setCity}
