@@ -146,13 +146,13 @@ const App = () => {
 
   return (
     <div
-      className={`min-h-screen flex flex-col items-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out ${isDark ? "text-white" : "text-gray-900"}`}
+      className={`min-h-screen flex flex-col items-center p-4 font-sans bg-cover bg-center transition-all duration-500 ease-in-out ${isDark ? "text-white" : "text-black"}`}
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       <div className="w-full max-w-7xl flex justify-between items-center mb-8 px-4 pt-4">
         <div className="flex items-center gap-4">
           <h1 className="text-xl md:text-2xl font-bold tracking-[0.1em] drop-shadow-sm uppercase">
-            SYNOPTIC
+            CLIMIX
           </h1>
           {weather && (
             <div className="flex items-center text-sm md:text-base opacity-80 pl-4 ml-2">
@@ -183,9 +183,9 @@ const App = () => {
       <div className="w-full max-w-7xl flex-grow flex flex-col justify-end pb-8">
         <div
           className={`backdrop-blur-xl rounded-3xl p-6 md:p-12 w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] transition-colors duration-500 border ${
-            isDark 
-              ? "bg-white/5 border-white/10 text-white" 
-              : "bg-black/5 border-black/10 text-gray-900"
+            isDark
+              ? "bg-white/5 border-white/10 text-white"
+              : "bg-white/30 border-white/40 text-black"
           } mb-12 flex flex-col md:flex-row md:items-start gap-8`}
         >
           <div className="w-full md:w-1/4 border-b md:border-b-0 md:border-r border-current/10 pb-6 md:pb-0 md:pr-8">
