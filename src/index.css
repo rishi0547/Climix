@@ -8,7 +8,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Hide scrollbar for horizontal scroll */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -17,7 +16,6 @@ body {
   scrollbar-width: none;
 }
 
-/* Smooth transitions */
 * {
   transition-property: color, background-color, border-color, opacity;
   transition-timing-function: ease-in-out;

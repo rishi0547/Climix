@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Sun,
-  Cloud,
-  CloudRain,
-  CloudSnow,
-  CloudLightning,
-  CloudFog,
-  CloudSun,
-  Moon,
-} from "lucide-react";
+import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog, CloudSun, Moon } from "lucide-react";
 
 const getHourlyIcon = (code, hour) => {
   const isNight = hour < 6 || hour >= 21;
@@ -40,7 +31,6 @@ const HourlyForecast = ({ hourly, unit, theme }) => {
   if (!hourly || !hourly.time) return null;
 
   const isDark = theme === "dark";
-
   const today = new Date().toISOString().split("T")[0];
 
   const hourLookup = {};
@@ -61,25 +51,17 @@ const HourlyForecast = ({ hourly, unit, theme }) => {
   };
 
   return (
-    <div className={`backdrop-blur-md border rounded-2xl p-4 md:p-5 w-full ${
-      isDark
-        ? "bg-white/[0.07] border-white/[0.12]"
-        : "bg-white/40 border-white/60 shadow-lg"
-    }`}>
-      {/* Period Headers */}
+    <div className={`backdrop-blur-md border rounded-2xl p-4 md:p-5 w-full ${isDark ? "bg-white/[0.07] border-white/[0.12]" : "bg-white/40 border-white/60 shadow-lg"}`}>
       <div className="grid grid-cols-4 mb-3">
         {PERIODS.map((period) => (
           <div key={period.label} className="text-center">
-            <span className={`text-[10px] md:text-[11px] font-semibold tracking-[0.15em] uppercase ${
-              isDark ? "text-white/40" : "text-gray-900/50"
-            }`}>
+            <span className={`text-[10px] md:text-[11px] font-semibold tracking-[0.15em] uppercase ${isDark ? "text-white/40" : "text-gray-900/50"}`}>
               {period.label}
             </span>
           </div>
         ))}
       </div>
 
-      {/* Hourly Data */}
       <div className="grid grid-cols-4">
         {PERIODS.map((period) => (
           <div key={period.label} className="flex justify-center gap-3 md:gap-5">

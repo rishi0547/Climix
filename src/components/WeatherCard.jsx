@@ -1,18 +1,5 @@
 import React from "react";
-import {
-  Wind,
-  Droplet,
-  Thermometer,
-  CloudRain,
-  Sunrise,
-  Sunset,
-  Sun,
-  Cloud,
-  CloudSun,
-  CloudSnow,
-  CloudLightning,
-  CloudFog,
-} from "lucide-react";
+import { Wind, Droplet, Thermometer, CloudRain, Sunrise, Sunset, Sun, Cloud, CloudSun, CloudSnow, CloudLightning, CloudFog } from "lucide-react";
 import HourlyForecast from "./HourlyForecast";
 
 const getWeatherIconLarge = (code) => {
@@ -31,11 +18,9 @@ const getWeatherIconLarge = (code) => {
 const getWeatherDescription = (code) => {
   const descriptions = {
     0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
-    45: "Fog", 48: "Depositing rime fog",
-    51: "Light drizzle", 53: "Moderate drizzle", 55: "Dense drizzle",
-    61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
-    71: "Slight snow fall", 73: "Moderate snow fall", 75: "Heavy snow fall",
-    95: "Thunderstorm",
+    45: "Fog", 48: "Depositing rime fog", 51: "Light drizzle", 53: "Moderate drizzle",
+    55: "Dense drizzle", 61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+    71: "Slight snow fall", 73: "Moderate snow fall", 75: "Heavy snow fall", 95: "Thunderstorm",
   };
   return descriptions[code] || "Clear";
 };
@@ -71,9 +56,7 @@ const WeatherCard = ({ weather, unit, theme }) => {
 
   return (
     <div className="w-full flex flex-col gap-8">
-      {/* Main 3-column section */}
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-        {/* Column 1: Current Overview */}
         <div className="flex flex-col gap-1 lg:min-w-[320px]">
           <p className={`text-[15px] md:text-[17px] font-light tracking-wide mb-4 drop-shadow-sm ${isDark ? "text-white/80" : "text-gray-700"}`}>
             {dateStr}
@@ -82,16 +65,19 @@ const WeatherCard = ({ weather, unit, theme }) => {
           <div className="flex items-center gap-5 mb-2">
             {getWeatherIconLarge(weatherCode)}
             <span className="text-[64px] md:text-[80px] lg:text-[90px] font-extralight tracking-tighter text-[#FACC15] drop-shadow-lg leading-none">
-              {formatTemp(weather.temperature)}°C
+              {formatTemp(weather.temperature)}°{unit}
             </span>
           </div>
 
           <p className={`text-[17px] font-light mt-2 drop-shadow-sm ${isDark ? "text-white/90" : "text-gray-800"}`}>
-            Feels like {formatTemp(weather.apparent_temperature ?? weather.temperature + 1)}°
+            Feels like {formatTemp(weather.apparent_temperature ?? weather.temperature + 1)}°{unit}
           </p>
 
           <p className={`text-[13px] font-light mt-1 max-w-[320px] leading-relaxed ${isDark ? "text-white/60" : "text-gray-500"}`}>
-            The whole day will be {desc.toLowerCase()}. {weather.precipitation_probability != null && weather.precipitation_probability > 5 ? `Precipitation probability: ${weather.precipitation_probability}%` : "No precipitation."}
+            The whole day will be {desc.toLowerCase()}.{" "}
+            {weather.precipitation_probability != null && weather.precipitation_probability > 5
+              ? `Precipitation probability: ${weather.precipitation_probability}%`
+              : "No precipitation."}
           </p>
 
           <div className={`mt-6 flex gap-6 text-[12px] font-light ${isDark ? "text-white/50" : "text-gray-500"}`}>
@@ -104,39 +90,16 @@ const WeatherCard = ({ weather, unit, theme }) => {
           </div>
         </div>
 
-        {/* Column 2: More Details */}
         <div className="flex flex-col gap-3 lg:min-w-[220px] pt-2">
           <h3 className={`text-[12px] font-semibold tracking-[0.18em] uppercase mb-2 ${isDark ? "text-white/60" : "text-gray-500"}`}>
             More Details:
           </h3>
-
-          <DetailRow
-            icon={<Wind size={14} strokeWidth={1.5} />}
-            label="Wind speed:"
-            value={`${weather.windspeed} m/s`}
-            isDark={isDark}
-          />
-          <DetailRow
-            icon={<Droplet size={14} strokeWidth={1.5} />}
-            label="Air humidity:"
-            value={weather.humidity != null ? `${weather.humidity}%` : "42-76%"}
-            isDark={isDark}
-          />
-          <DetailRow
-            icon={<Thermometer size={14} strokeWidth={1.5} />}
-            label="Pressure:"
-            value={weather.pressure != null ? `${Math.round(weather.pressure)}hPa` : "747-749mm"}
-            isDark={isDark}
-          />
-          <DetailRow
-            icon={<CloudRain size={14} strokeWidth={1.5} />}
-            label="Precipitation probability:"
-            value={weather.precipitation_probability != null ? `${weather.precipitation_probability}%` : "2%"}
-            isDark={isDark}
-          />
+          <DetailRow icon={<Wind size={14} strokeWidth={1.5} />} label="Wind speed:" value={`${weather.windspeed} m/s`} isDark={isDark} />
+          <DetailRow icon={<Droplet size={14} strokeWidth={1.5} />} label="Air humidity:" value={weather.humidity != null ? `${weather.humidity}%` : "42-76%"} isDark={isDark} />
+          <DetailRow icon={<Thermometer size={14} strokeWidth={1.5} />} label="Pressure:" value={weather.pressure != null ? `${Math.round(weather.pressure)}hPa` : "747-749mm"} isDark={isDark} />
+          <DetailRow icon={<CloudRain size={14} strokeWidth={1.5} />} label="Precipitation probability:" value={weather.precipitation_probability != null ? `${weather.precipitation_probability}%` : "2%"} isDark={isDark} />
         </div>
 
-        {/* Column 3: Hourly Forecast */}
         <div className="flex-1 w-full lg:w-auto">
           <HourlyForecast hourly={weather.hourly} unit={unit} theme={theme} />
         </div>
@@ -150,7 +113,9 @@ const DetailRow = ({ icon, label, value, isDark }) => (
     <span className={`flex items-center gap-2 font-light ${isDark ? "text-white/60" : "text-gray-600"}`}>
       {icon} {label}
     </span>
-    <span className={`font-medium ${isDark ? "text-white/90" : "text-gray-900"}`}>{value}</span>
+    <span className={`font-medium ${isDark ? "text-white/90" : "text-gray-900"}`}>
+      {value}
+    </span>
   </div>
 );
 

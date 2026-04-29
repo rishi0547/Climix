@@ -168,7 +168,6 @@ const App = () => {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Gradient overlay — adapts to theme */}
       <div
         className={`absolute inset-0 pointer-events-none z-0 ${
           isDark
@@ -177,9 +176,7 @@ const App = () => {
         }`}
       />
 
-      {/* Content */}
       <div className="relative z-10 flex flex-col items-center min-h-screen">
-        {/* Header */}
         <Header
           weather={weather}
           unit={unit}
@@ -195,12 +192,9 @@ const App = () => {
           toggleTheme={toggleTheme}
         />
 
-        {/* Error Message */}
         <ErrorMessage error={error} theme={theme} />
 
-        {/* Main Content Area */}
         <div className="flex-1 flex flex-col justify-end w-full max-w-[1400px] px-6 md:px-10 pb-10">
-          {/* Loading State */}
           {loading && (
             <div className="flex items-center justify-center py-20">
               <div className="flex flex-col items-center gap-4">
@@ -210,7 +204,6 @@ const App = () => {
             </div>
           )}
 
-          {/* Welcome State */}
           {!weather && !loading && !error && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <h2 className={`text-3xl md:text-4xl font-extralight mb-4 tracking-wide ${isDark ? "text-white/80" : "text-gray-800"}`}>
@@ -222,7 +215,6 @@ const App = () => {
             </div>
           )}
 
-          {/* Weather Data */}
           {weather && (
             <>
               <WeatherCard weather={weather} unit={unit} theme={theme} />
