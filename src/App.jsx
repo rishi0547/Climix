@@ -40,7 +40,7 @@ const App = () => {
 
     try {
       const geoRes = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`,
+        `${import.meta.env.VITE_GEO_API_URL}?name=${encodeURIComponent(cityName)}&count=1`,
       );
       const geoData = await geoRes.json();
 
@@ -51,7 +51,7 @@ const App = () => {
       const { latitude, longitude, name, country } = geoData.results[0];
 
       const weatherRes = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+        `${import.meta.env.VITE_WEATHER_API_URL}?latitude=${latitude}&longitude=${longitude}` +
           `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
           `&hourly=temperature_2m,weathercode` +
           `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
@@ -107,7 +107,7 @@ const App = () => {
         const { latitude, longitude } = position.coords;
         try {
           const weatherRes = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
+            `${import.meta.env.VITE_WEATHER_API_URL}?latitude=${latitude}&longitude=${longitude}` +
               `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
               `&hourly=temperature_2m,weathercode` +
               `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
@@ -116,7 +116,7 @@ const App = () => {
           const weatherData = await weatherRes.json();
 
           const locationRes = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+            `${import.meta.env.VITE_REVERSE_GEO_API_URL}?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
           );
           const locationData = await locationRes.json();
 
