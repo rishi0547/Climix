@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import Header from "./components/Header";
 import WeatherCard from "./components/WeatherCard";
 import Forecast from "./components/Forecast";
@@ -14,15 +14,12 @@ const App = () => {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searchHistory, setSearchHistory] = useState([]);
+  const [searchHistory, setSearchHistory] = useState(() => {
+    return JSON.parse(localStorage.getItem("cities")) || [];
+  });
   const [unit, setUnit] = useState("C");
 
   const isDark = theme === "dark";
-
-  useEffect(() => {
-    const history = JSON.parse(localStorage.getItem("cities")) || [];
-    setSearchHistory(history);
-  }, []);
 
   const saveCity = (cityName) => {
     let history = JSON.parse(localStorage.getItem("cities")) || [];
@@ -43,7 +40,7 @@ const App = () => {
 
     try {
       const geoRes = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`,
       );
       const geoData = await geoRes.json();
 
@@ -55,10 +52,10 @@ const App = () => {
 
       const weatherRes = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-        `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
-        `&hourly=temperature_2m,weathercode` +
-        `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
-        `&timezone=auto&forecast_days=10`
+          `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
+          `&hourly=temperature_2m,weathercode` +
+          `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
+          `&timezone=auto&forecast_days=10`,
       );
       const weatherData = await weatherRes.json();
 
@@ -73,7 +70,8 @@ const App = () => {
         pressure: current.surface_pressure ?? null,
         apparent_temperature: current.apparent_temperature ?? null,
         weathercode: current.weathercode ?? 2,
-        precipitation_probability: weatherData.daily?.precipitation_probability_max?.[0] ?? null,
+        precipitation_probability:
+          weatherData.daily?.precipitation_probability_max?.[0] ?? null,
         sunrise: weatherData.daily?.sunrise?.[0] ?? null,
         sunset: weatherData.daily?.sunset?.[0] ?? null,
         hourly: weatherData.hourly || null,
@@ -110,15 +108,15 @@ const App = () => {
         try {
           const weatherRes = await fetch(
             `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
-            `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
-            `&hourly=temperature_2m,weathercode` +
-            `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
-            `&timezone=auto&forecast_days=10`
+              `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,surface_pressure,windspeed_10m,precipitation` +
+              `&hourly=temperature_2m,weathercode` +
+              `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset,precipitation_probability_max,windspeed_10m_max` +
+              `&timezone=auto&forecast_days=10`,
           );
           const weatherData = await weatherRes.json();
 
           const locationRes = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
           );
           const locationData = await locationRes.json();
 
@@ -133,7 +131,8 @@ const App = () => {
             pressure: current.surface_pressure ?? null,
             apparent_temperature: current.apparent_temperature ?? null,
             weathercode: current.weathercode ?? 2,
-            precipitation_probability: weatherData.daily?.precipitation_probability_max?.[0] ?? null,
+            precipitation_probability:
+              weatherData.daily?.precipitation_probability_max?.[0] ?? null,
             sunrise: weatherData.daily?.sunrise?.[0] ?? null,
             sunset: weatherData.daily?.sunset?.[0] ?? null,
             hourly: weatherData.hourly || null,
@@ -150,9 +149,11 @@ const App = () => {
         }
       },
       () => {
-        setError("Unable to retrieve your location. Please allow location access.");
+        setError(
+          "Unable to retrieve your location. Please allow location access.",
+        );
         setLoading(false);
-      }
+      },
     );
   };
 
@@ -198,19 +199,36 @@ const App = () => {
           {loading && (
             <div className="flex items-center justify-center py-20">
               <div className="flex flex-col items-center gap-4">
-                <div className={`w-10 h-10 border-2 rounded-full animate-spin ${isDark ? "border-white/20 border-t-yellow-400" : "border-gray-300 border-t-yellow-500"}`} />
-                <p className={`text-sm font-light tracking-wide ${isDark ? "text-white/60" : "text-gray-500"}`}>Fetching weather data...</p>
+                <div
+                  className={`w-10 h-10 border-2 rounded-full animate-spin ${isDark ? "border-white/20 border-t-yellow-400" : "border-gray-300 border-t-yellow-500"}`}
+                />
+                <p
+                  className={`text-sm font-light tracking-wide ${isDark ? "text-white/60" : "text-gray-500"}`}
+                >
+                  Fetching weather data...
+                </p>
               </div>
             </div>
           )}
 
           {!weather && !loading && !error && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <h2 className={`text-3xl md:text-4xl font-extralight mb-4 tracking-wide ${isDark ? "text-white/80" : "text-gray-800"}`}>
+              <h2
+                className={`text-3xl md:text-4xl font-extralight mb-4 tracking-wide ${isDark ? "text-white/80" : "text-gray-800"}`}
+              >
                 Welcome to Climix
               </h2>
-              <p className={`text-sm font-light max-w-md leading-relaxed ${isDark ? "text-white/40" : "text-gray-500"}`}>
-                Open the <span className={`font-medium tracking-wider ${isDark ? "text-white/70" : "text-gray-700"}`}>MENU</span> to search for a city or use your current location to get started.
+              <p
+                className={`text-sm font-light max-w-md leading-relaxed ${isDark ? "text-white/40" : "text-gray-500"}`}
+              >
+                Open the{" "}
+                <span
+                  className={`font-medium tracking-wider ${isDark ? "text-white/70" : "text-gray-700"}`}
+                >
+                  MENU
+                </span>{" "}
+                to search for a city or use your current location to get
+                started.
               </p>
             </div>
           )}
